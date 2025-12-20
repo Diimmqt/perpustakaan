@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class transaksi extends Model
 {
     use HasFactory;
-s
+
 
     protected $fillable = [
     'peminjam_id',

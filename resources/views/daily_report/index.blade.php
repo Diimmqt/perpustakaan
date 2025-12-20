@@ -1,29 +1,97 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Report Perpustakaan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        form input, form textarea, form button {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        .success {
+            color: green;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
 
+    <h2>Daily Report Perpustakaan</h2>
 
-@section('content')
-<h3>Transaksi Peminjaman</h3>
+    {{-- pesan sukses --}}
+    @if(session('success'))
+        <div class="success">
+            {{ session('success') }}
+        </div>
+    @endif
 
+    {{-- form input --}}
+    <form action="/daily-report" method="POST">
+        @csrf
 
-<form action="/transaksi" method="POST" class="mb-3">
-@csrf
-<input type="number" name="peminjam_id" placeholder="ID Peminjam" class="form-control mb-2" required>
-<input type="number" name="buku_id" placeholder="ID Buku" class="form-control mb-2" required>
-<input type="date" name="tanggal_pinjam" class="form-control mb-2" required>
-<button class="btn btn-success">Pinjam</button>
-</form>
+        <label>Tanggal</label><br>
+        <input type="date" name="tanggal" required><br>
 
+        <label>Total Pengunjung</label><br>
+        <input type="number" name="total_pengunjung" required><br>
 
-<table class="table table-bordered">
-<tr>
-<th>Peminjam</th><th>Buku</th><th>Status</th>
-</tr>
-@foreach($transaksi as $t)
-<tr>
-<td>{{ $t->peminjam->nama }}</td>
-<td>{{ $t->buku->judul }}</td>
-<td>{{ $t->status }}</td>
-</tr>
-@endforeach
-</table>
-@endsection
+        <label>Total Peminjaman</label><br>
+        <input type="number" name="total_peminjaman" required><br>
+
+        <label>Catatan</label><br>
+        <textarea name="catatan" rows="3"></textarea><br>
+
+        <button type="submit">Simpan Laporan</button>
+    </form>
+
+    {{-- tabel data --}}
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Pengunjung</th>
+                <th>Peminjaman</th>
+                <th>Catatan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($reports as $r)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $r->tanggal }}</td>
+                    <td>{{ $r->total_pengunjung }}</td>
+                    <td>{{ $r->total_peminjaman }}</td>
+                    <td>{{ $r->catatan }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5">Belum ada laporan</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+</body>
+</html>

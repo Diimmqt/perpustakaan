@@ -17,7 +17,7 @@
 
 <table class="table table-bordered">
 <tr>
-<th>Judul</th><th>Penulis</th><th>Tahun</th><th>Stok</th>
+<th>Judul</th><th>Penulis</th><th>Tahun</th><th>Stok</th><th>aksi</th>
 </tr>
 @foreach($bukus as $b)
 <tr>
@@ -25,6 +25,16 @@
 <td>{{ $b->penulis }}</td>
 <td>{{ $b->tahun }}</td>
 <td>{{ $b->stok }}</td>
+<td>
+    <a href="/buku/{{ $b->id }}/edit">Edit</a>
+
+    <form action="/buku/{{ $b->id }}" method="POST" style="display:inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit">Hapus</button>
+    </form>
+</td>
+
 </tr>
 @endforeach
 </table>

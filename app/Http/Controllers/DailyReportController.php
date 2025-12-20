@@ -26,3 +26,4 @@ class DailyReportController extends Controller
         return redirect('/daily-report')->with('success','Laporan tersimpan');
     }
 }
+?>

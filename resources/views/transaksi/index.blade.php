@@ -16,13 +16,31 @@
 
 <table class="table table-bordered">
 <tr>
-<th>Peminjam</th><th>Buku</th><th>Status</th>
+<th>Peminjam</th><th>Buku</th><th>Status</th><th>aksi</th>
 </tr>
 @foreach($transaksis as $t)
 <tr>
 <td>{{ $t->peminjam->nama }}</td>
 <td>{{ $t->buku->judul }}</td>
 <td>{{ $t->status }}</td>
+<td>
+    <a href="/transaksi/{{ $t->id }}/edit">Edit</a>
+
+    <form action="/transaksi/{{ $t->id }}" method="POST" style="display:inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit">Hapus</button>
+    </form>
+
+    @if($t->status == 'dipinjam')
+    <form action="/transaksi/{{ $t->id }}/kembali" method="POST" style="display:inline">
+        @csrf
+        @method('PUT')
+        <button type="submit">Kembalikan</button>
+    </form>
+    @endif
+</td>
+
 </tr>
 @endforeach
 </table>

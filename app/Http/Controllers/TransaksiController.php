@@ -6,24 +6,30 @@ use App\Models\Transaksi;
 use App\Models\Peminjam;
 use App\Models\Buku;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\DailyReport;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
         $transaksis = Transaksi::with(['peminjam','buku'])->get();
-        $peminjams = Peminjam::all();
-        $bukus = Buku::all();
+        $peminjams  = Peminjam::all();
+        $bukus      = Buku::all();
 
-        return view('transaksi.index', compact('transaksis','peminjams','bukus'));
+        return view('transaksi.index', compact(
+            'transaksis',
+            'peminjams',
+            'bukus'
+        ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'peminjam_id' => 'required',
-            'buku_id' => 'required',
-            'tanggal_pinjam' => 'required|date'
+            'peminjam_id' => 'required|exists:peminjams,id',
+            'buku_id' => 'required|exists:bukus,id',
+            'tanggal_pinjam' => 'required|date',
         ]);
 
         Transaksi::create([
@@ -33,40 +39,28 @@ class TransaksiController extends Controller
             'status' => 'dipinjam'
         ]);
 
-        return redirect('/transaksi');
-    }
-
-    public function edit($id)
-    {
-        $transaksi = Transaksi::findOrFail($id);
-        $peminjams = Peminjam::all();
-        $bukus = Buku::all();
-
-        return view('transaksi.edit', compact('transaksi','peminjams','bukus'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $transaksi = Transaksi::findOrFail($id);
-        $transaksi->update($request->all());
-
-        return redirect('/transaksi');
-    }
-
-    public function destroy($id)
-    {
-        Transaksi::destroy($id);
-        return redirect('/transaksi');
+        return redirect('/transaksi')->with('success','Transaksi berhasil');
     }
 
     public function kembali($id)
     {
         $transaksi = Transaksi::findOrFail($id);
+
+        // update status & tanggal kembali
         $transaksi->update([
-            'tanggal_kembali' => now(),
-            'status' => 'dikembalikan'
+            'status' => 'kembali',
+            'tanggal_kembali' => Carbon::today()
         ]);
 
-        return redirect('/transaksi');
+        return redirect('/transaksi')->with('success', 'Buku berhasil dikembalikan');
     }
+    public function destroy($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+        $transaksi->delete();
+
+         redirect('/transaksi')->with('success', 'Transaksi berhasil dihapus');
+    }
+
+
 }

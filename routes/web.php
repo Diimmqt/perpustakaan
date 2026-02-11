@@ -1,36 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\DailyReportController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PeminjamController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/buku', [BukuController::class, 'index']);
+    Route::get('/transaksi', [TransaksiController::class, 'index']);
+    Route::get('/daily-report', [DailyReportController::class, 'index']);
+    Route::get('/peminjam', [PeminjamController::class, 'index']);
+});
 
 
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
 
 
-/*
-|--------------------------------------------------------------------------
-| WEB ROUTES
-|--------------------------------------------------------------------------
-*/
-// home
-Route::get('/', [HomeController::class, 'index']);
-// ===== BUKU =====
-Route::get('/buku', [BukuController::class, 'index']);
-Route::post('/buku', [BukuController::class, 'store']);
-Route::get('/buku/{id}/edit', [BukuController::class, 'edit']);
-Route::put('/buku/{id}', [BukuController::class, 'update']);
-Route::delete('/buku/{id}', [BukuController::class, 'destroy']);
-
-// ===== TRANSAKSI =====
-Route::get('/transaksi', [TransaksiController::class, 'index']);
-Route::post('/transaksi', [TransaksiController::class, 'store']);
-Route::get('/transaksi/{id}/edit', [TransaksiController::class, 'edit']);
-Route::put('/transaksi/{id}', [TransaksiController::class, 'update']);
-Route::delete('/transaksi/{id}', [TransaksiController::class, 'destroy']);
-Route::put('/transaksi/{id}/kembali', [TransaksiController::class, 'kembali']);
-
-// ===== DAILY REPORT =====
-Route::get('/daily-report', [DailyReportController::class, 'index']);
-Route::post('/daily-report', [DailyReportController::class, 'store']);
